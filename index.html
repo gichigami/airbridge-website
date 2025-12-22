@@ -113,7 +113,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">🔄</div>
                     <h3>Automated Synchronization</h3>
-                    <p>Bidirectional sync between QuickBooks Online and Salesforce. Invoices and bills update automatically, keeping both systems in perfect alignment. Perfect for AR/AP synchronization needs.</p>
+                    <p>Bidirectional sync between QuickBooks Online and Salesforce for standard implementations. AvSight environments use unidirectional sync (QuickBooks → Salesforce) since AvSight has native sync for invoices → QuickBooks. Invoices and bills update automatically, keeping both systems in perfect alignment. Perfect for AR/AP synchronization needs.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
@@ -161,8 +161,8 @@
             <p class="customization-intro">
                 Every business is unique. AirBridge is fully customized during deployment to match your specific requirements, 
                 ensuring it works seamlessly with your existing processes and data structures. 
-                <strong>AvSight environments</strong> benefit from pre-optimized configurations, while 
-                <strong>other Salesforce environments</strong> receive additional customization to analyze and adapt to your custom object structure.
+                <strong>AvSight environments</strong> benefit from pre-optimized configurations and use unidirectional sync (QuickBooks → Salesforce) since AvSight already has native sync that moves invoices to QuickBooks. 
+                <strong>Other Salesforce environments</strong> receive additional customization for bidirectional sync and to analyze and adapt to your custom object structure.
             </p>
             <div class="customization-grid">
                 <div class="customization-item">
@@ -262,15 +262,15 @@
                         <div class="pricing-badge">Required</div>
                     </div>
                     <div class="pricing-cards-compact">
-                        <div class="pricing-card-compact selectable-card" data-deployment="avsight" data-price-min="4700" data-price-max="6000">
+                        <div class="pricing-card-compact selectable-card" data-deployment="avsight" data-price-min="3900" data-price-max="5800">
                             <div class="card-compact-header">
                                 <h4>Salesforce AvSight</h4>
-                                <span class="price-compact">$4,700 - $6,000</span>
+                                <span class="price-compact">$3,900 - $5,800</span>
                             </div>
-                            <p class="card-compact-desc">Optimized for AvSight with proven structures</p>
+                            <p class="card-compact-desc">Unidirectional sync (QuickBooks → Salesforce). AvSight has native sync for invoices → QuickBooks.</p>
                             <ul class="features-compact">
                                 <li>✓ QuickBooks API & OAuth setup</li>
-                                <li>✓ AvSight customization</li>
+                                <li>✓ AvSight customization (unidirectional)</li>
                                 <li>✓ AWS deployment</li>
                                 <li>✓ Testing & training</li>
                                 <li>✓ 30-day support</li>
@@ -282,15 +282,15 @@
                                 <h4>Other Salesforce</h4>
                                 <span class="price-compact">$6,000 - $8,100</span>
                             </div>
-                            <p class="card-compact-desc">Custom deployment with additional analysis</p>
+                            <p class="card-compact-desc">Bidirectional sync (QuickBooks ↔ Salesforce) with custom deployment</p>
                             <ul class="features-compact">
-                                <li>✓ Everything in AvSight</li>
+                                <li>✓ Bidirectional sync (full AR/AP)</li>
                                 <li>✓ Custom object analysis</li>
                                 <li>✓ Extended field mapping</li>
                                 <li>✓ Custom business logic</li>
                                 <li>✓ 45-day support</li>
                             </ul>
-                            <p class="compact-note"><strong>Why more?</strong> Requires thorough analysis of custom structures and processes.</p>
+                            <p class="compact-note"><strong>Why more?</strong> Requires thorough analysis of custom structures and processes, plus bidirectional sync implementation.</p>
                             <div class="card-select-indicator">Click to select</div>
                         </div>
                     </div>
@@ -416,7 +416,7 @@
                 <div class="summary-breakdown">
                     <div class="summary-item">
                         <span class="summary-label">One-Time Deployment:</span>
-                        <span class="summary-value" id="deployment-cost">$4,700 - $6,000</span>
+                        <span class="summary-value" id="deployment-cost">$3,900 - $5,800</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Monthly Infrastructure:</span>
