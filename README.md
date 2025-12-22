@@ -1,6 +1,6 @@
-# AirBridge Marketing Website
+# AirBridgeQB Marketing Website
 
-A professional single-page marketing website for AirBridge - an automated synchronization solution between QuickBooks Online and Salesforce. Perfect for any Salesforce environment requiring AR/AP synchronization, including AvSight and custom implementations.
+A professional single-page marketing website for AirBridgeQB - an automated synchronization solution between QuickBooks Online and Salesforce. Perfect for any Salesforce environment requiring AR/AP synchronization, including AvSight and custom implementations.
 
 ## Overview
 
@@ -95,7 +95,7 @@ For a simple temporary solution, you can uncomment the mailto link in `js/script
 
 ```javascript
 // Uncomment in the showSuccessMessage function:
-const mailtoLink = `mailto:gjohnson@pioneer-aero.com?subject=AirBridge Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}`;
+const mailtoLink = `mailto:gjohnson@pioneer-aero.com?subject=AirBridgeQB Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}`;
 window.location.href = mailtoLink;
 ```
 
@@ -161,5 +161,5 @@ For questions or issues with the website, contact:
 
 ## License
 
-© 2025 AirBridge. All rights reserved.
+© 2025 AirBridgeQB. All rights reserved.
 

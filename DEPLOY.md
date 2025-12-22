@@ -1,4 +1,4 @@
-# Deploy AirBridge Website to GitHub Pages
+# Deploy AirBridgeQB Website to GitHub Pages
 
 ## Quick Setup Instructions
 
@@ -9,7 +9,7 @@ Your website files are ready and committed to git. Follow these steps to deploy:
 1. Go to [github.com](https://github.com) and sign in
 2. Click the "+" icon in the top right → "New repository"
 3. Repository name: `airbridge-website` (or any name you prefer)
-4. Description: "AirBridge - QuickBooks & Salesforce Integration Website"
+4. Description: "AirBridgeQB - QuickBooks & Salesforce Integration Website"
 5. Set to **Public** (required for free GitHub Pages)
 6. **DO NOT** initialize with README, .gitignore, or license (we already have files)
 7. Click "Create repository"

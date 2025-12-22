@@ -1,6 +1,6 @@
 # Contact Form Backend Deployment Guide
 
-This guide walks you through deploying the contact form backend for the AirBridge website. The backend consists of an AWS Lambda function that handles form submissions and sends emails via SMTP.
+This guide walks you through deploying the contact form backend for the AirBridgeQB website. The backend consists of an AWS Lambda function that handles form submissions and sends emails via SMTP.
 
 ## Architecture
 
