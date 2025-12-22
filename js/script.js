@@ -49,11 +49,14 @@ window.addEventListener('scroll', () => {
     lastScroll = currentScroll;
 });
 
+// API Gateway endpoint for contact form submissions
+const CONTACT_FORM_API_URL = 'https://ov9ok9i1h8.execute-api.us-east-1.amazonaws.com/prod/contact';
+
 // Form Validation and Submission
 const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // Clear previous error messages
@@ -105,15 +108,80 @@ if (contactForm) {
         }
         
         if (isValid) {
-            // Form is valid, show success message
-            // Note: In a production environment, you would send this data to a server
-            showSuccessMessage();
-            
-            // Optionally, you can use mailto as a fallback:
-            // const mailtoLink = `mailto:gjohnson@pioneer-aero.com?subject=AirBridge Inquiry from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}`;
-            // window.location.href = mailtoLink;
+            // Submit form to API Gateway
+            await submitContactForm({
+                name: name,
+                company: company,
+                email: email,
+                phone: phone,
+                message: message
+            });
         }
     });
+}
+
+// Submit contact form to API Gateway
+async function submitContactForm(formData) {
+    const submitButton = contactForm.querySelector('.btn-submit');
+    const originalButtonText = submitButton ? submitButton.textContent : 'Send Message';
+    
+    // Disable submit button and show loading state
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
+    }
+    
+    // Hide any previous messages
+    const formMessage = document.getElementById('form-message');
+    if (formMessage) {
+        formMessage.style.display = 'none';
+    }
+    
+    try {
+        // Check if API URL is configured
+        if (CONTACT_FORM_API_URL.includes('YOUR_API_GATEWAY_URL_HERE')) {
+            throw new Error('API Gateway URL not configured. Please update CONTACT_FORM_API_URL in script.js');
+        }
+        
+        const response = await fetch(CONTACT_FORM_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Success - show success message and reset form
+            showSuccessMessage(data.message || 'Thank you for your interest! We will contact you soon.');
+            contactForm.reset();
+        } else {
+            // Error response from API
+            const errorMessage = data.error || 'Failed to send message. Please try again later.';
+            showErrorMessage(errorMessage);
+        }
+    } catch (error) {
+        console.error('Error submitting contact form:', error);
+        
+        // Handle network errors or other exceptions
+        let errorMessage = 'Failed to send message. Please check your connection and try again.';
+        
+        if (error.message.includes('API Gateway URL not configured')) {
+            errorMessage = 'Contact form is not yet configured. Please contact the site administrator.';
+        } else if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Network error. Please check your connection and try again.';
+        }
+        
+        showErrorMessage(errorMessage);
+    } finally {
+        // Re-enable submit button
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
+    }
 }
 
 // Email validation helper
@@ -151,16 +219,13 @@ function clearErrors() {
 }
 
 // Show success message
-function showSuccessMessage() {
+function showSuccessMessage(message) {
     const formMessage = document.getElementById('form-message');
     if (formMessage) {
-        formMessage.textContent = 'Thank you for your interest! We will contact you soon.';
+        formMessage.textContent = message || 'Thank you for your interest! We will contact you soon.';
         formMessage.classList.remove('error');
         formMessage.classList.add('success');
         formMessage.style.display = 'block';
-        
-        // Reset form
-        contactForm.reset();
         
         // Scroll to success message
         formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -169,6 +234,20 @@ function showSuccessMessage() {
         setTimeout(() => {
             formMessage.style.display = 'none';
         }, 5000);
+    }
+}
+
+// Show error message
+function showErrorMessage(message) {
+    const formMessage = document.getElementById('form-message');
+    if (formMessage) {
+        formMessage.textContent = message;
+        formMessage.classList.remove('success');
+        formMessage.classList.add('error');
+        formMessage.style.display = 'block';
+        
+        // Scroll to error message
+        formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 
