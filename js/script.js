@@ -329,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up card click listeners
     const deploymentCards = document.querySelectorAll('.selectable-card[data-deployment]');
     const infrastructureCards = document.querySelectorAll('.selectable-card[data-infrastructure]');
-    const supportCards = document.querySelectorAll('.selectable-card[data-support]');
 
     deploymentCards.forEach(card => {
         card.addEventListener('click', () => handleCardSelection(card, 'deployment'));
@@ -341,20 +340,12 @@ document.addEventListener('DOMContentLoaded', () => {
         card.style.cursor = 'pointer';
     });
 
-    supportCards.forEach(card => {
-        card.addEventListener('click', () => handleCardSelection(card, 'support'));
-        card.style.cursor = 'pointer';
-    });
-
     // Set default selections (first card in each group)
     if (deploymentCards.length > 0) {
         handleCardSelection(deploymentCards[0], 'deployment');
     }
     if (infrastructureCards.length > 0) {
         handleCardSelection(infrastructureCards[0], 'infrastructure');
-    }
-    if (supportCards.length > 0) {
-        handleCardSelection(supportCards[0], 'support');
     }
 
     // Add animation on scroll (optional enhancement)
