@@ -254,8 +254,7 @@ function showErrorMessage(message) {
 // Pricing Calculator - Card-based selection
 let selectedOptions = {
     deployment: null,
-    infrastructure: null,
-    support: null
+    infrastructure: null
 };
 
 function formatPrice(min, max) {
@@ -289,25 +288,12 @@ function updatePricingSummary() {
         document.getElementById('infrastructure-cost').textContent = `~${formatMonthlyPrice(min, max)}`;
     }
 
-    // Update support cost
-    if (selectedOptions.support) {
-        const card = selectedOptions.support;
-        const min = parseInt(card.dataset.priceMin);
-        const max = parseInt(card.dataset.priceMax);
-        document.getElementById('support-cost').textContent = formatMonthlyPrice(min, max);
-    }
-
-    // Calculate and update total monthly cost
-    if (selectedOptions.infrastructure && selectedOptions.support) {
+    // Calculate and update total monthly cost (infrastructure only)
+    if (selectedOptions.infrastructure) {
         const infraMin = parseInt(selectedOptions.infrastructure.dataset.priceMin);
         const infraMax = parseInt(selectedOptions.infrastructure.dataset.priceMax);
-        const supportMin = parseInt(selectedOptions.support.dataset.priceMin);
-        const supportMax = parseInt(selectedOptions.support.dataset.priceMax);
         
-        const totalMin = infraMin + supportMin;
-        const totalMax = infraMax + supportMax;
-        
-        document.getElementById('monthly-total').textContent = `~${formatMonthlyPrice(totalMin, totalMax)}`;
+        document.getElementById('monthly-total').textContent = `~${formatMonthlyPrice(infraMin, infraMax)}`;
     }
 }
 
