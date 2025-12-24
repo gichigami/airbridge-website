@@ -100,7 +100,7 @@
                         <div class="stat-label">Infrastructure/mo*</div>
                     </div>
                 </div>
-                <p class="stat-note">*Infrastructure costs vary by sync frequency: ~$6-7/month (Standard: 15 min during working hours), ~$28/month (Business Critical: 5 min working hours, 30 min outside), or ~$145/month (Real-Time: 2 min, 24/7)</p>
+                <p class="stat-note">*Infrastructure costs vary based on records processed and sync frequency. Use the cost calculator below to estimate your specific costs.</p>
             </div>
         </div>
     </section>
@@ -118,7 +118,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Configurable Sync Frequency</h3>
-                    <p>Incremental sync can be configured from every 2 minutes (24/7) to every 15 minutes during business hours. Choose Standard for typical operations, Business Critical for frequent business-hour updates, or Real-Time for near-instant synchronization. Only processes records that have changed, ensuring fast and efficient synchronization.</p>
+                    <p>Incremental sync can be configured from every 2 minutes (24/7) to every 15 minutes during business hours. Sync frequency is fully customizable based on your business needs—from standard business hours only to real-time 24/7 synchronization. Only processes records that have changed, ensuring fast and efficient synchronization.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🌙</div>
@@ -262,10 +262,10 @@
                         <div class="pricing-badge">Required</div>
                     </div>
                     <div class="pricing-cards-compact">
-                        <div class="pricing-card-compact selectable-card" data-deployment="avsight" data-price-min="4200" data-price-max="6000">
+                        <div class="pricing-card-compact">
                             <div class="card-compact-header">
                                 <h4>Salesforce AvSight</h4>
-                                <span class="price-compact">$4,200 - $6,000</span>
+                                <span class="price-compact">Contact for Quote</span>
                             </div>
                             <p class="card-compact-desc">Unidirectional sync (QuickBooks → Salesforce). AvSight has native sync for invoices → QuickBooks.</p>
                             <ul class="features-compact">
@@ -275,12 +275,11 @@
                                 <li>✓ Testing & training</li>
                                 <li>✓ 30-day support</li>
                             </ul>
-                            <div class="card-select-indicator">Click to select</div>
                         </div>
-                        <div class="pricing-card-compact selectable-card" data-deployment="other" data-price-min="6500" data-price-max="9000">
+                        <div class="pricing-card-compact">
                             <div class="card-compact-header">
                                 <h4>Other Salesforce</h4>
-                                <span class="price-compact">$6,500 - $9,000</span>
+                                <span class="price-compact">Contact for Quote</span>
                             </div>
                             <p class="card-compact-desc">Bidirectional sync (QuickBooks ↔ Salesforce) with custom deployment</p>
                             <ul class="features-compact">
@@ -291,87 +290,139 @@
                                 <li>✓ 45-day support</li>
                             </ul>
                             <p class="compact-note"><strong>Why more?</strong> Requires thorough analysis of custom structures and processes, plus bidirectional sync implementation.</p>
-                            <div class="card-select-indicator">Click to select</div>
                         </div>
                     </div>
-                    <p class="group-note">Payment can be structured in phases. Contact for detailed quote.</p>
+                    <p class="group-note"><strong>Pricing is negotiable</strong> and can be structured in phases based on your specific needs. Contact us for a detailed quote tailored to your requirements.</p>
                 </div>
 
-                <!-- Infrastructure Section -->
+                <!-- Infrastructure Cost Calculator -->
                 <div class="pricing-group infrastructure-group">
                     <div class="group-header">
-                        <h3>Infrastructure Costs (AWS)</h3>
+                        <h3>Infrastructure Cost Calculator (AWS)</h3>
                         <div class="pricing-badge">Variable</div>
                     </div>
-                    <div class="pricing-cards-compact infra-scenarios">
-                        <div class="pricing-card-compact selectable-card" data-infrastructure="standard" data-price-min="6" data-price-max="7">
-                            <div class="card-compact-header">
-                                <h4>Standard</h4>
-                                <span class="price-compact">~$6-7/mo</span>
+                    <div class="cost-calculator">
+                        <p class="calculator-intro">Estimate your monthly AWS infrastructure costs based on your usage patterns. Adjust the inputs below to see how costs scale with your data volume and sync frequency.</p>
+                        
+                        <div class="calculator-inputs">
+                            <div class="calculator-input-group">
+                                <label for="records-per-day" class="calculator-label">
+                                    Records Per Day <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="records-per-day" 
+                                    name="records-per-day" 
+                                    min="0" 
+                                    max="10000" 
+                                    value="60" 
+                                    class="calculator-input"
+                                    required
+                                >
+                                <span class="input-hint">Average number of records (invoices + bills) processed per day</span>
                             </div>
-                            <p class="card-compact-desc">15 min sync during working hours (8 AM - 5 PM)</p>
-                            <div class="infra-breakdown-small">
-                                <span>Lambda: $3.24</span>
-                                <span>Logs: $2.77</span>
-                                <span>Secrets: $1.20</span>
-                                <span>Other: $0.21</span>
+                            
+                            <div class="calculator-input-group">
+                                <label for="sync-time-period" class="calculator-label">
+                                    Sync Time Period <span class="required">*</span>
+                                </label>
+                                <select 
+                                    id="sync-time-period" 
+                                    name="sync-time-period" 
+                                    class="calculator-input calculator-select"
+                                    required
+                                >
+                                    <option value="9h" selected>9-hour working day (8 AM - 5 PM)</option>
+                                    <option value="24h">24 hours (all day)</option>
+                                </select>
+                                <span class="input-hint">Choose when the sync runs</span>
                             </div>
-                            <p class="compact-note">~1,080 syncs/month. Perfect for typical business operations with regular data updates.</p>
-                            <div class="card-select-indicator">Click to select</div>
+                            
+                            <div class="calculator-input-group">
+                                <label for="sync-frequency" class="calculator-label">
+                                    Sync Frequency <span class="required">*</span>
+                                </label>
+                                <select 
+                                    id="sync-frequency" 
+                                    name="sync-frequency" 
+                                    class="calculator-input calculator-select"
+                                    required
+                                >
+                                    <option value="2">Every 2 minutes</option>
+                                    <option value="5">Every 5 minutes</option>
+                                    <option value="15" selected>Every 15 minutes</option>
+                                    <option value="30">Every 30 minutes</option>
+                                    <option value="60">Every 60 minutes (1 hour)</option>
+                                </select>
+                                <span class="input-hint">How often the sync runs during the selected time period</span>
+                            </div>
                         </div>
-                        <div class="pricing-card-compact selectable-card" data-infrastructure="business-critical" data-price-min="28" data-price-max="28">
-                            <div class="card-compact-header">
-                                <h4>Business Critical</h4>
-                                <span class="price-compact">~$28/mo</span>
+                        
+                        <div class="calculator-results" id="calculator-results">
+                            <div class="calculator-breakdown">
+                                <h4>Monthly Cost Breakdown</h4>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Lambda Compute:</span>
+                                    <span class="breakdown-value" id="lambda-cost">$0.00</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">CloudWatch Logs:</span>
+                                    <span class="breakdown-value" id="logs-cost">$0.00</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Secrets Manager:</span>
+                                    <span class="breakdown-value">$1.20</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">S3 & Other:</span>
+                                    <span class="breakdown-value">$0.01</span>
+                                </div>
+                                <div class="breakdown-item breakdown-total">
+                                    <span class="breakdown-label">Total Monthly Cost:</span>
+                                    <span class="breakdown-value" id="total-cost">$0.00</span>
+                                </div>
                             </div>
-                            <p class="card-compact-desc">5 min during working hours, 30 min outside (24/7)</p>
-                            <div class="infra-breakdown-small">
-                                <span>Lambda: $12.42</span>
-                                <span>Logs: $17.71</span>
-                                <span>Secrets: $1.20</span>
-                                <span>Other: $1.40</span>
+                            <div class="calculator-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Records per sync cycle:</span>
+                                    <span class="detail-value" id="records-per-sync">0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Sync cycles per month:</span>
+                                    <span class="detail-value" id="syncs-per-month">0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Avg execution time:</span>
+                                    <span class="detail-value" id="exec-time">0s</span>
+                                </div>
                             </div>
-                            <p class="compact-note">~4,140 syncs/month. Ideal for operations requiring frequent updates during business hours with overnight coverage.</p>
-                            <div class="card-select-indicator">Click to select</div>
                         </div>
-                        <div class="pricing-card-compact selectable-card" data-infrastructure="real-time" data-price-min="145" data-price-max="145">
-                            <div class="card-compact-header">
-                                <h4>Real-Time</h4>
-                                <span class="price-compact">~$145/mo</span>
-                            </div>
-                            <p class="card-compact-desc">2 min sync, 24/7 (all day)</p>
-                            <div class="infra-breakdown-small">
-                                <span>Lambda: $64.80</span>
-                                <span>Logs: $102.97</span>
-                                <span>Secrets: $1.20</span>
-                                <span>Other: $1.29</span>
-                            </div>
-                            <p class="compact-note">~21,600 syncs/month. For businesses requiring near-instant data synchronization around the clock.</p>
-                            <div class="card-select-indicator">Click to select</div>
-                        </div>
+                        
+                        <p class="calculator-note">
+                            <strong>Note:</strong> Costs are estimates based on actual usage patterns. Lambda compute scales with execution time and memory usage, which increases with record volume. CloudWatch Logs includes a 5 GB/month free tier for ingestion. All costs shown are recurring monthly AWS infrastructure costs. Deployment costs are separate and negotiable.
+                        </p>
                     </div>
-                    <p class="group-note">Costs scale with sync frequency. Most customers use the Standard plan for typical business operations. Business Critical provides more frequent updates during active hours, while Real-Time offers near-instant synchronization. Sync frequency is fully configurable during deployment.</p>
                 </div>
             </div>
 
             <div class="pricing-summary">
-                <h3>Your Selected Options</h3>
-                <p class="summary-intro">Click on the cards above to select your options. Your total cost will update automatically.</p>
+                <h3>Cost Summary</h3>
+                <p class="summary-intro">Based on the calculator inputs above, here's your estimated monthly infrastructure cost.</p>
                 <div class="summary-breakdown">
                     <div class="summary-item">
                         <span class="summary-label">One-Time Deployment:</span>
-                        <span class="summary-value" id="deployment-cost">$4,200 - $6,000</span>
+                        <span class="summary-value">Contact for Quote</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Monthly Infrastructure:</span>
-                        <span class="summary-value" id="infrastructure-cost">~$6-7/month</span>
+                        <span class="summary-value" id="infrastructure-cost">~$0.00/month</span>
                     </div>
                     <div class="summary-item total">
                         <span class="summary-label">Total Monthly Cost:</span>
-                        <span class="summary-value" id="monthly-total">~$6-7/month</span>
+                        <span class="summary-value" id="monthly-total">~$0.00/month</span>
                     </div>
                 </div>
-                <p class="summary-note">Deployment is a one-time cost. Monthly infrastructure costs are recurring and vary based on sync frequency.</p>
+                <p class="summary-note">Deployment pricing is negotiable and can be structured in phases. Monthly infrastructure costs are recurring and update automatically based on your calculator inputs.</p>
             </div>
         </div>
     </section>

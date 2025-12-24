@@ -251,103 +251,136 @@ function showErrorMessage(message) {
     }
 }
 
-// Pricing Calculator - Card-based selection
-let selectedOptions = {
-    deployment: null,
-    infrastructure: null
-};
+// Cost Calculator - Calculate AWS infrastructure costs based on usage
+const LAMBDA_PRICING_PER_GB_SECOND = 0.0000166667;
+const LOGS_INGESTION_PER_GB = 0.50;
+const LOGS_FREE_TIER_GB = 5;
+const SECRETS_MANAGER_COST = 1.20;
+const S3_OTHER_COST = 0.01;
 
-function formatPrice(min, max) {
-    if (min === max) {
-        return `$${min.toLocaleString()}`;
-    }
-    return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
+// Calculate sync cycles per day based on time period and frequency
+function calculateSyncCyclesPerDay(timePeriod, frequencyMinutes) {
+    const minutesInPeriod = timePeriod === '24h' ? 1440 : 540; // 24 hours or 9 hours (540 min)
+    return Math.floor(minutesInPeriod / frequencyMinutes);
 }
 
-function formatMonthlyPrice(min, max) {
-    if (min === max) {
-        return `$${min.toLocaleString()}/month`;
-    }
-    return `$${min.toLocaleString()}-${max.toLocaleString()}/month`;
+// Cost calculation formulas based on empirical data
+function calculateLambdaCost(recordsPerSync, syncsPerMonth) {
+    // Duration formula: Duration (seconds) = 33.77 + (6.37 × N)
+    const durationSeconds = 33.77 + (6.37 * recordsPerSync);
+    
+    // Memory formula: Memory (GB) = 0.352 + (0.028 × N), capped at 1.0 GB
+    const memoryGB = Math.min(0.352 + (0.028 * recordsPerSync), 1.0);
+    
+    // Cost per invocation: Duration × Memory × Pricing
+    const costPerInvocation = durationSeconds * memoryGB * LAMBDA_PRICING_PER_GB_SECOND;
+    
+    // Monthly cost
+    const monthlyCost = costPerInvocation * syncsPerMonth;
+    
+    return {
+        costPerInvocation,
+        monthlyCost,
+        durationSeconds,
+        memoryGB
+    };
 }
 
-function updatePricingSummary() {
-    // Update deployment cost
-    if (selectedOptions.deployment) {
-        const card = selectedOptions.deployment;
-        const min = parseInt(card.dataset.priceMin);
-        const max = parseInt(card.dataset.priceMax);
-        document.getElementById('deployment-cost').textContent = formatPrice(min, max);
-    }
+function calculateLogsCost(recordsPerSync, syncsPerMonth) {
+    // Log size per run: base ~5 MB + ~0.75 MB per record
+    const logSizeMBPerRun = 5 + (0.75 * recordsPerSync);
+    
+    // Monthly log volume in GB
+    const monthlyLogVolumeGB = (logSizeMBPerRun * syncsPerMonth) / 1024;
+    
+    // Ingestion cost (first 5 GB free)
+    const billableGB = Math.max(0, monthlyLogVolumeGB - LOGS_FREE_TIER_GB);
+    const ingestionCost = billableGB * LOGS_INGESTION_PER_GB;
+    
+    // Storage cost is negligible with 3-day retention (~$0.003/GB/month)
+    const storageCost = monthlyLogVolumeGB * 0.003;
+    
+    return {
+        monthlyCost: ingestionCost + storageCost,
+        ingestionCost,
+        storageCost,
+        monthlyLogVolumeGB,
+        logSizeMBPerRun
+    };
+}
 
-    // Update infrastructure cost
-    if (selectedOptions.infrastructure) {
-        const card = selectedOptions.infrastructure;
-        const min = parseInt(card.dataset.priceMin);
-        const max = parseInt(card.dataset.priceMax);
-        document.getElementById('infrastructure-cost').textContent = `~${formatMonthlyPrice(min, max)}`;
-    }
+function formatCurrency(amount) {
+    return `$${amount.toFixed(2)}`;
+}
 
-    // Calculate and update total monthly cost (infrastructure only)
-    if (selectedOptions.infrastructure) {
-        const infraMin = parseInt(selectedOptions.infrastructure.dataset.priceMin);
-        const infraMax = parseInt(selectedOptions.infrastructure.dataset.priceMax);
-        
-        document.getElementById('monthly-total').textContent = `~${formatMonthlyPrice(infraMin, infraMax)}`;
+function updateCostCalculator() {
+    const recordsPerDayInput = document.getElementById('records-per-day');
+    const syncTimePeriodSelect = document.getElementById('sync-time-period');
+    const syncFrequencySelect = document.getElementById('sync-frequency');
+    
+    if (!recordsPerDayInput || !syncTimePeriodSelect || !syncFrequencySelect) return;
+    
+    const recordsPerDay = parseFloat(recordsPerDayInput.value) || 0;
+    const timePeriod = syncTimePeriodSelect.value; // '9h' or '24h'
+    const frequencyMinutes = parseFloat(syncFrequencySelect.value) || 15;
+    
+    // Validate inputs
+    if (recordsPerDay < 0) {
+        return;
+    }
+    
+    // Calculate sync cycles per day based on time period and frequency
+    const syncCyclesPerDay = calculateSyncCyclesPerDay(timePeriod, frequencyMinutes);
+    
+    // Calculate records per sync cycle
+    const recordsPerSync = recordsPerDay / syncCyclesPerDay;
+    const syncsPerMonth = syncCyclesPerDay * 30;
+    
+    // Calculate costs
+    const lambdaCosts = calculateLambdaCost(recordsPerSync, syncsPerMonth);
+    const logsCosts = calculateLogsCost(recordsPerSync, syncsPerMonth);
+    const totalCost = lambdaCosts.monthlyCost + logsCosts.monthlyCost + SECRETS_MANAGER_COST + S3_OTHER_COST;
+    
+    // Update display
+    document.getElementById('lambda-cost').textContent = formatCurrency(lambdaCosts.monthlyCost);
+    document.getElementById('logs-cost').textContent = formatCurrency(logsCosts.monthlyCost);
+    document.getElementById('total-cost').textContent = formatCurrency(totalCost);
+    
+    // Update details
+    document.getElementById('records-per-sync').textContent = recordsPerSync.toFixed(2);
+    document.getElementById('syncs-per-month').textContent = syncsPerMonth.toLocaleString();
+    document.getElementById('exec-time').textContent = `${lambdaCosts.durationSeconds.toFixed(1)}s`;
+    
+    // Update summary section
+    const infraCostElement = document.getElementById('infrastructure-cost');
+    const monthlyTotalElement = document.getElementById('monthly-total');
+    
+    if (infraCostElement) {
+        infraCostElement.textContent = `~${formatCurrency(totalCost)}/month`;
+    }
+    if (monthlyTotalElement) {
+        monthlyTotalElement.textContent = `~${formatCurrency(totalCost)}/month`;
     }
 }
 
-function handleCardSelection(card, category) {
-    // Remove selected class from all cards in the same group
-    const group = card.closest('.pricing-cards-compact');
-    group.querySelectorAll('.selectable-card').forEach(c => {
-        c.classList.remove('selected');
-        const indicator = c.querySelector('.card-select-indicator');
-        if (indicator) {
-            indicator.textContent = 'Click to select';
-        }
-    });
-    
-    // Add selected class to clicked card
-    card.classList.add('selected');
-    
-    // Update indicator text
-    const indicator = card.querySelector('.card-select-indicator');
-    if (indicator) {
-        indicator.textContent = '✓ Selected';
-    }
-    
-    // Update selected option
-    selectedOptions[category] = card;
-    
-    // Update summary
-    updatePricingSummary();
-}
-
-// Initialize pricing calculator on page load
+// Initialize cost calculator on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Set up card click listeners
-    const deploymentCards = document.querySelectorAll('.selectable-card[data-deployment]');
-    const infrastructureCards = document.querySelectorAll('.selectable-card[data-infrastructure]');
 
-    deploymentCards.forEach(card => {
-        card.addEventListener('click', () => handleCardSelection(card, 'deployment'));
-        card.style.cursor = 'pointer';
-    });
-
-    infrastructureCards.forEach(card => {
-        card.addEventListener('click', () => handleCardSelection(card, 'infrastructure'));
-        card.style.cursor = 'pointer';
-    });
-
-    // Set default selections (first card in each group)
-    if (deploymentCards.length > 0) {
-        handleCardSelection(deploymentCards[0], 'deployment');
+    // Set up cost calculator event listeners
+    const recordsPerDayInput = document.getElementById('records-per-day');
+    const syncTimePeriodSelect = document.getElementById('sync-time-period');
+    const syncFrequencySelect = document.getElementById('sync-frequency');
+    
+    if (recordsPerDayInput && syncTimePeriodSelect && syncFrequencySelect) {
+        // Calculate on input change
+        recordsPerDayInput.addEventListener('input', updateCostCalculator);
+        syncTimePeriodSelect.addEventListener('change', updateCostCalculator);
+        syncFrequencySelect.addEventListener('change', updateCostCalculator);
+        
+        // Calculate on page load with default values
+        updateCostCalculator();
     }
-    if (infrastructureCards.length > 0) {
-        handleCardSelection(infrastructureCards[0], 'infrastructure');
-    }
-
+    
     // Add animation on scroll (optional enhancement)
     const observerOptions = {
         threshold: 0.1,
